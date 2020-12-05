@@ -1,0 +1,93 @@
+#KX-code
+#script for charts that compare Dx by species and carb material #import dataset
+
+library(ggplot2) library(scales) library(gridExtra)
+
+#re-labeling df <- data.frame(excludingoutliers) df$Phylum_f = factor(df$Phylum, levels = c('Cnidaria', 'Annelida', 'Mollusca','Echinodermata', 'Rhodophyte', 'Arthropoda')) DLi <- df$DLi DB <- df$DB DCd <- df$DCd DU <- df$DU DMg <- df$DMg DZn <- df$DZn DSr <- df$DSr DBa <- df$DBa DNa <- df$DNa
+
+pHsw <- df$pHsw ph <- df$ph_calcify d11B <- df$d11B organism <- df$Organism carb_mat <- df$Carbonate.Material crate <- df$CRate phylum <- df$Phylum
+
+OUTLIER TEST
+run code -> rosnerTest(DB, k=3, warn=TRUE)
+change first entry for each element (DB, DLi, DMg etc.), k= how many outliers you think there are, keep warn the same and if the test labels data point TRUE it is an outlier, if test says false data point is not an outlier
+#-------BORON INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DB_med = c(0.02,0.02) #med DB_low = c(0.00414,0.00414) #low DB_acc = c(0.035,0.035, 0.035) #-------END BORON PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- #-------WE DID NOT PLOT ACC COEFFICIENT DUE TO TOO LARGE OF SCALE---------------------------------------------------------------------------------------------
+
+-------- BORON Pre-plot ------------------------------------------------
+dfDB_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DB_med) #mid dfDB_low <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DB_low) #low dfDB_acc <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy", "C. Calcite"), DB_acc) #low
+
+-------- START BORON BOXplot -------------------------------------------------
+plotboxDB <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DB), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DB, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KB"), title=expression("KB")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(legend.position = "right") + theme(axis.title.x=element_blank()) plotboxDB <- plotboxDB + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDB + geom_hline(aes(yintercept = DB_med), dfDB_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DB_low), dfDB_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DB_acc), dfDB_acc, colour = "green", linetype="dotdash")
+
+-------- END BORON BOXplot -------------------------------------------------
+#-------STRONTIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- #-------WE DID NOT PLOT COEFFICIENTS DUE TO TOO LARGE OF SCALE--------------------------------------------------------------------------------------------- DSr_med = c(1.13,1.13) #med DSr_low = c(0.25925, 0.25925) #low DSr_acc = c(0.76, 0.76,0.76) #low #-------END STRONTIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- STRONTIUM Pre-plot ------------------------------------------------
+dfDSr_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DSr_med) #mid dfDSr_low <- data.frame(carb_mat = c("C. Calcite", "B. Mixed Mineralogy"), DSr_low) #low dfDSr_acc <- data.frame(carb_mat = c("A. Aragonite", "C. Calcite", "B. Mixed Mineralogy"), DSr_acc) #low
+
+-------- START STRONTIUM BOXplot -------------------------------------------------
+plotboxDSr <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DSr), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DSr, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KSr"), title=expression("KSr")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDSr <- plotboxDSr + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDSr + geom_hline(aes(yintercept = DSr_med), dfDSr_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DSr_low), dfDSr_low, color="blue", linetype="dotted")+ geom_hline(aes(yintercept = DSr_acc), dfDSr_acc, color="green", linetype="dotdash")
+
+-------- END STRONTIUM BOXplot -------------------------------------------------
+#-------MAGNESIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DMg_med = c(0.0004719304922, 0.0004719304922) #med DMg_low = c(0.026625, 0.026625) #low DMg_acc = c(0.102, 0.102, 0.102) #-------END MAGNESIUM PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- #-------WE DID NOT PLOT ACC COEFFICIENT DUE TO TOO LARGE OF SCALE---------------------------------------------------------------------------------------------
+
+dfDMg_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DMg_med) #mid dfDMg_low <- data.frame(carb_mat = c("C. Calcite", "B. Mixed Mineralogy"), DMg_low) #low dfDMg_acc <- data.frame(carb_mat = c("A. Aragonite", "C. Calcite", "B. Mixed Mineralogy"), DMg_acc) #low
+
+-------- START MAGNESIUM BOXplot -------------------------------------------------
+plotboxDMg <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DMg), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DMg, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KMg"), title=expression("KMg")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDMg <- plotboxDMg + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDMg + geom_hline(aes(yintercept = DMg_med), dfDMg_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DMg_low), dfDMg_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DMg_acc), dfDMg_acc, color="green", linetype="dotdash")
+
+-------- END MAGNESIUM BOXplot -------------------------------------------------
+#-------LITHIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DLi_med = c(0.03213599995,0.03213599995) #med DLi_low = c(0.00014,0.00014) #low DLi_high = c(0.0049,0.0049) #high DLi_acc = c(0.00168,0.00168, 0.00168) #-------END LITHIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- LITHIUM Pre-plot ------------------------------------------------
+dfDLi_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DLi_med) #mid dfDLi_low <- data.frame(carb_mat= c("B. Mixed Mineralogy", "C. Calcite"), DLi_low) #low dfDLi_high <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DLi_high) #high dfDLi_acc <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy", "C. Calcite"), DLi_acc) #high
+
+-------- START LITHIUM BOXplot -------------------------------------------------
+plotboxDLi <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DLi), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DLi, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KLi"), title=expression("KLi")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDLi <- plotboxDLi + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDLi + geom_hline(aes(yintercept = DLi_med), dfDLi_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DLi_low), dfDLi_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DLi_high), dfDLi_high, color="cyan", linetype="twodash") + geom_hline(aes(yintercept = DLi_acc), dfDLi_acc, color="green", linetype="dotdash")
+
+-------- END LITHIUM BOXplot -------------------------------------------------
+#-------BARIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DBa_med = c(0.22,0.22) #med DBa_low = c(0.9635,0.9635) #low DBa_high = c(2.11,2.11) #high DBa_new = c(0.004,0.004) DBa_acc = c(1.94,1.94,1.94) #-------END BARIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- BARIUM Pre-plot ------------------------------------------------
+dfDBa_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DBa_med) #mid dfDBa_low <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DBa_low) #low dfDBa_high <- data.frame(carb_mat = c("B. Mixed Mineralogy", "A. Aragonite"), DBa_high) #high dfDBa_new <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DBa_new) dfDBa_acc <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy", "C. Calcite"), DBa_acc)
+
+-------- START BARIUM BOXplot -------------------------------------------------
+plotboxDBa <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DBa), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DBa, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KBa"), title=expression("KBa")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDBa <- plotboxDBa + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDBa + geom_hline(aes(yintercept = DBa_med), dfDBa_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DBa_low), dfDBa_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DBa_high), dfDBa_high, color="cyan", linetype="twodash") + geom_hline(aes(yintercept = DBa_new), dfDBa_new, color="#00AFBB", linetype="longdash") + geom_hline(aes(yintercept = DBa_acc), dfDBa_acc, color="green", linetype="dotdash")
+
+-------- END BARIUM BOXplot -------------------------------------------------
+#-------URANIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DU_med = c(0.248,0.248) #med DU_low = c(0.02,0.02) #low DU_high = c(0.06,0.06) #high DU_acc = c(0.12,0.12,0.12) #acc #-------END URANIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- URANIUM Pre-plot ------------------------------------------------
+dfDU_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DU_med) #mid dfDU_low <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DU_low) #low dfDU_high <- data.frame(carb_mat = c("B. Mixed Mineralogy", "C. Calcite"), DU_high) #high dfDU_acc <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy", "C. Calcite"), DU_acc) #high
+
+-------- START URANIUM BOXplot -------------------------------------------------
+plotboxDU <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DU), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DU, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KU"), title=expression("KU")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDU <- plotboxDU + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDU + geom_hline(aes(yintercept = DU_med), dfDU_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DU_low), dfDU_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DU_high), dfDU_high, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DU_acc), dfDU_acc, color="green", linetype="dotdash")
+
+-------- END URANIUM BOXplot -------------------------------------------------
+#-------ZINC INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DZn_med = c(5.7,5.7) #med DZn_low = c(54,54) #low #-------END ZINC PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- ZINC Pre-plot ------------------------------------------------
+dfDZn_med <- data.frame(Carbonate.Material = c("A. Aragonite", "B. Mixed Mineralogy"), DZn_med) #mid dfDZn_low <- data.frame(Carbonate.Material = c("B. Mixed Mineralogy", "C. Calcite"), DZn_low) #low
+
+-------- START ZINC BOXplot -------------------------------------------------
+plotboxDZn <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DZn), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DZn, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KZn"), title=expression("KZn")) + theme_classic() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(axis.title.x=element_blank()) plotboxDZn <- plotboxDZn + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDZn + geom_hline(aes(yintercept = DZn_med), dfDZn_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DZn_low), dfDZn_low, color="blue", linetype="dotted")
+
+-------- END ZINC BOXplot -------------------------------------------------
+#-------CADMIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DCd_med = c(18.5,18.5) #med #-------END CADMIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+-------- CADMIUM Pre-plot ------------------------------------------------
+dfDCd_med <- data.frame(Carbonate.Material = c("C. Calcite", "B. Mixed Mineralogy"), DCd_med) #mid
+
+-------- START CADMIUM BOXplot -------------------------------------------------
+plotboxDCd <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DCd), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DCd, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KCd"), title=expression("KCd")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDCd <- plotboxDCd + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDCd + geom_hline(aes(yintercept = DCd_med), dfDCd_med, colour = "blue", linetype="dotted")
+
+-------- END CADMIUM BOXplot -------------------------------------------------
+#-------SODIUM INORGANIC PARTITION COEFFICIENTS--------------------------------------------------------------------------------------------- DNa_med = c(0.00015, 0.00015) #med DNa_low = c(0.00005, 0.00005) #low DNa_acc = c(0.0026, 0.0026, 0.0026)
+
+#-------END SODIUM PARTITION COEFFICIENTS---------------------------------------------------------------------------------------------
+
+dfDNa_med <- data.frame(carb_mat = c("A. Aragonite", "B. Mixed Mineralogy"), DNa_med) #mid dfDNa_low <- data.frame(carb_mat = c("C. Calcite", "B. Mixed Mineralogy"), DNa_low) #low dfDNa_acc <- data.frame(carb_mat = c("A. Aragonite", "C. Calcite", "B. Mixed Mineralogy"), DNa_acc) #low
+
+-------- START SODIUM BOXplot -------------------------------------------------
+plotboxDNa <- ggplot(df, aes(reorder(Organism, carb.number))) + geom_boxplot(aes(y = DNa), colour = "darkgrey", size = .75, alpha = 1) + geom_jitter(aes(y=DNa, colour = phylum, shape = phylum), size = 1.25, alpha = 0.75) + scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7)) + labs(y=expression("KNa"), title=expression("KNa")) + theme_classic() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10)) + theme(axis.title.x=element_blank()) plotboxDNa <- plotboxDNa + facet_grid(~ Carbonate.Material, scales = "free", space = "free_x") plotboxDNa + geom_hline(aes(yintercept = DNa_med), dfDNa_med, colour = "red", linetype="dashed") + geom_hline(aes(yintercept = DNa_low), dfDNa_low, color="blue", linetype="dotted") + geom_hline(aes(yintercept = DNa_acc), dfDNa_acc, color="green", linetype="dotdash")
+
+-------- END SODIUM BOXplot -------------------------------------------------
